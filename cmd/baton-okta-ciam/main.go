@@ -41,7 +41,6 @@ func getConnector(ctx context.Context, v *viper.Viper) (types.ConnectorServer, e
 		ApiToken:            v.GetString("api-token"),
 		SyncInactiveApps:    v.GetBool("sync-inactive-apps"),
 		OktaProvisioning:    v.GetBool("okta-provisioning"),
-		Ciam:                v.GetBool("ciam"),
 		CiamEmailDomains:    v.GetStringSlice("ciam-email-domains"),
 		Cache:               v.GetBool("cache"),
 		CacheTTI:            v.GetInt32("cache-tti"),

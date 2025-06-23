@@ -51,8 +51,8 @@ func (o *userResourceType) List(
 	resourceID *v2.ResourceId,
 	token *pagination.Token,
 ) ([]*v2.Resource, string, annotations.Annotations, error) {
-	// If we are in ciam mode, and there are no email filters specified, don't sync users.
-	if o.connector.ciamConfig.Enabled && len(o.emailFilters) == 0 {
+	// If there are no email filters specified, don't sync users.
+	if len(o.emailFilters) == 0 {
 		return nil, "", nil, nil
 	}
 	bag, page, err := parsePageToken(token.Token, &v2.ResourceId{ResourceType: resourceTypeUser.Id})
@@ -79,7 +79,7 @@ func (o *userResourceType) List(
 	}
 
 	for _, user := range users {
-		if o.connector.ciamConfig.Enabled && !shouldIncludeOktaUser(user, o.emailFilters) {
+		if !shouldIncludeOktaUser(user, o.emailFilters) {
 			continue
 		}
 		resource, err := userResource(ctx, user, o.connector.skipSecondaryEmails)
@@ -462,8 +462,8 @@ func (o *userResourceType) Get(ctx context.Context, resourceId *v2.ResourceId, p
 
 	var annos annotations.Annotations
 
-	// If we are in ciam mode, and there are no email filters specified, don't sync user.
-	if o.connector.ciamConfig.Enabled && len(o.emailFilters) == 0 {
+	// If there are no email filters specified, don't sync user.
+	if len(o.emailFilters) == 0 {
 		return nil, nil, nil
 	}
 
@@ -483,7 +483,7 @@ func (o *userResourceType) Get(ctx context.Context, resourceId *v2.ResourceId, p
 		return nil, annos, nil
 	}
 
-	if o.connector.ciamConfig.Enabled && !shouldIncludeOktaUser(user, o.emailFilters) {
+	if !shouldIncludeOktaUser(user, o.emailFilters) {
 		return nil, annos, nil
 	}
 

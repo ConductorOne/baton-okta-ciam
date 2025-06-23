@@ -9,7 +9,6 @@ var (
 	apiToken           = field.StringField("api-token", field.WithDescription("The API token for the service account"))
 	syncInactivateApps = field.BoolField("sync-inactive-apps", field.WithDescription("Whether to sync inactive apps or not"), field.WithDefaultValue(true))
 	oktaProvisioning   = field.BoolField("okta-provisioning")
-	ciam               = field.BoolField("ciam", field.WithDescription("Whether to run in CIAM mode or not. In CIAM mode, only roles and the users assigned to roles are synced"))
 	ciamEmailDomains   = field.StringSliceField("ciam-email-domains",
 		field.WithDescription("The email domains to use for CIAM mode. Any users that don't have an email address with one of the provided domains will be ignored, unless explicitly granted a role"))
 	cache               = field.BoolField("cache", field.WithDescription("Enable response cache"), field.WithDefaultValue(true))
@@ -28,7 +27,6 @@ var Config = field.NewConfiguration([]field.SchemaField{
 	apiToken,
 	syncInactivateApps,
 	oktaProvisioning,
-	ciam,
 	ciamEmailDomains,
 	cache,
 	cacheTTI,

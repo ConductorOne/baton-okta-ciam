@@ -33,14 +33,12 @@ type Okta struct {
 }
 
 type ciamConfig struct {
-	Enabled      bool
 	EmailDomains []string
 }
 
 type Config struct {
 	Domain           string
 	ApiToken         string
-	Ciam             bool
 	CiamEmailDomains []string
 
 	SyncInactiveApps    bool
@@ -116,33 +114,10 @@ var (
 )
 
 func (o *Okta) ResourceSyncers(ctx context.Context) []connectorbuilder.ResourceSyncer {
-	if o.ciamConfig.Enabled {
-		return []connectorbuilder.ResourceSyncer{
-			ciamUserBuilder(o),
-			ciamBuilder(o.client, o.skipSecondaryEmails),
-		}
+	return []connectorbuilder.ResourceSyncer{
+		ciamUserBuilder(o),
+		ciamBuilder(o.client, o.skipSecondaryEmails),
 	}
-
-	resourceSyncer := []connectorbuilder.ResourceSyncer{
-		roleBuilder(o.client, o),
-		userBuilder(o),
-		groupBuilder(o),
-		appBuilder(o.domain, o.apiToken, o.syncInactiveApps, o.client),
-	}
-
-	if o.syncCustomRoles {
-		resourceSyncer = append(resourceSyncer,
-			customRoleBuilder(o),
-			resourceSetsBuilder(o.domain, o.client, o.clientV5),
-			resourceSetsBindingsBuilder(o.domain, o.client, o.clientV5),
-		)
-	}
-
-	if o.SyncSecrets {
-		resourceSyncer = append(resourceSyncer, apiTokenBuilder(o.clientV5))
-	}
-
-	return resourceSyncer
 }
 
 func (c *Okta) ListResourceTypes(ctx context.Context, request *v2.ResourceTypesServiceListResourceTypesRequest) (*v2.ResourceTypesServiceListResourceTypesResponse, error) {
@@ -313,7 +288,6 @@ func New(ctx context.Context, cfg *Config) (*Okta, error) {
 		skipSecondaryEmails: cfg.SkipSecondaryEmails,
 		SyncSecrets:         cfg.SyncSecrets,
 		ciamConfig: &ciamConfig{
-			Enabled:      cfg.Ciam,
 			EmailDomains: cfg.CiamEmailDomains,
 		},
 	}, nil
