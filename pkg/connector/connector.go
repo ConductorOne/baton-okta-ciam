@@ -30,7 +30,6 @@ type Config struct {
 	ApiToken         string
 	CiamEmailDomains []string
 
-	OktaProvisioning    bool
 	Cache               bool
 	CacheTTI            int32
 	CacheTTL            int32

@@ -6,7 +6,6 @@ import "reflect"
 type OktaCiam struct {
 	Domain string `mapstructure:"domain"`
 	ApiToken string `mapstructure:"api-token"`
-	OktaProvisioning bool `mapstructure:"okta-provisioning"`
 	CiamEmailDomains []string `mapstructure:"ciam-email-domains"`
 	Cache bool `mapstructure:"cache"`
 	CacheTti int `mapstructure:"cache-tti"`
