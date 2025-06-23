@@ -2,7 +2,6 @@ package connector
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -97,31 +96,6 @@ func (o *userResourceType) List(
 	}
 
 	return rv, pageToken, annos, nil
-}
-
-func embeddedOktaUserFromAppUser(appUser *okta.AppUser) (*okta.User, error) {
-	embedded := appUser.Embedded
-	if embedded == nil {
-		return nil, fmt.Errorf("app user '%s' embedded data was nil", appUser.Id)
-	}
-	embeddedMap, ok := embedded.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("app user '%s' embedded data was not a map", appUser.Id)
-	}
-	embeddedUser, ok := embeddedMap["user"]
-	if !ok {
-		return nil, fmt.Errorf("embedded user data was nil for app user '%s'", appUser.Id)
-	}
-	userJSON, err := json.Marshal(embeddedUser)
-	if err != nil {
-		return nil, fmt.Errorf("error marshalling embedded user data for app user '%s': %w", appUser.Id, err)
-	}
-	oktaUser := &okta.User{}
-	err = json.Unmarshal(userJSON, &oktaUser)
-	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling embedded user data for app user '%s': %w", appUser.Id, err)
-	}
-	return oktaUser, nil
 }
 
 func shouldIncludeOktaUser(u *okta.User, emailDomainFilters []string) bool {
@@ -519,15 +493,6 @@ func (o *userResourceType) Get(ctx context.Context, resourceId *v2.ResourceId, p
 	}
 
 	return resource, annos, nil
-}
-
-func getApplicationUser(ctx context.Context, client *okta.Client, appID string, oktaUserID string, qp *query.Params) (*okta.AppUser, *responseContext, error) {
-	applicationUser, resp, err := client.Application.GetApplicationUser(ctx, appID, oktaUserID, qp)
-	if err != nil {
-		return nil, nil, fmt.Errorf("okta-connectorv2: failed to fetch app user from okta: %w", handleOktaResponseError(resp, err))
-	}
-
-	return applicationUser, &responseContext{OktaResponse: resp}, nil
 }
 
 func getUser(ctx context.Context, client *okta.Client, oktaUserID string) (*okta.User, *responseContext, error) {
