@@ -218,24 +218,13 @@ func (o *groupResourceType) Grants(
 				continue
 			}
 
-			if !o.connector.syncCustomRoles && role.Type == roleTypeCustom {
-				continue
-			}
-
 			// TODO(lauren) convert model helper
 			var roleResourceVal *v2.Resource
-			if role.Type == roleTypeCustom {
-				roleResourceVal, err = roleResource(ctx, &okta.Role{
-					Id:    role.Role,
-					Label: role.Label,
-				}, resourceTypeCustomRole)
-			} else {
-				roleResourceVal, err = roleResource(ctx, &okta.Role{
-					Id:    role.Role,
-					Label: role.Label,
-					Type:  role.Type,
-				}, resourceTypeRole)
-			}
+			roleResourceVal, err = roleResource(ctx, &okta.Role{
+				Id:    role.Role,
+				Label: role.Label,
+				Type:  role.Type,
+			}, resourceTypeRole)
 			if err != nil {
 				return nil, "", nil, err
 			}

@@ -65,12 +65,6 @@ var (
 		Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_ROLE},
 		Annotations: v1AnnotationsForResourceType("role", false),
 	}
-	resourceTypeCustomRole = &v2.ResourceType{
-		Id:          "custom-role",
-		DisplayName: "Custom Role",
-		Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_ROLE},
-		Annotations: v1AnnotationsForResourceType("custom-role", false),
-	}
 	resourceTypeUser = &v2.ResourceType{
 		Id:          "user",
 		DisplayName: "User",
@@ -82,16 +76,6 @@ var (
 		DisplayName: "Group",
 		Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_GROUP},
 		Annotations: v1AnnotationsForResourceType("group", false),
-	}
-	resourceTypeResourceSets = &v2.ResourceType{
-		Id:          "resource-set",
-		DisplayName: "Resource Set",
-		Annotations: v1AnnotationsForResourceType("resource-set", false),
-	}
-	resourceTypeResourceSetsBindings = &v2.ResourceType{
-		Id:          "resourceset-binding",
-		DisplayName: "Resource Set Binding",
-		Annotations: v1AnnotationsForResourceType("resourceset-binding", false),
 	}
 )
 
