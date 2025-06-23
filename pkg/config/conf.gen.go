@@ -11,7 +11,6 @@ type OktaCiam struct {
 	Cache bool `mapstructure:"cache"`
 	CacheTti int `mapstructure:"cache-tti"`
 	CacheTtl int `mapstructure:"cache-ttl"`
-	SyncCustomRoles bool `mapstructure:"sync-custom-roles"`
 	SkipSecondaryEmails bool `mapstructure:"skip-secondary-emails"`
 }
 
