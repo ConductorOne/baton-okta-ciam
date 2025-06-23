@@ -13,10 +13,6 @@ import (
 	"github.com/okta/okta-sdk-golang/v2/okta"
 )
 
-// TODO: use isNotFoundError() since E0000008 is also a not found error
-const ResourceNotFoundExceptionErrorCode = "E0000007"
-const AccessDeniedErrorCode = "E0000006"
-
 type Okta struct {
 	client              *okta.Client
 	domain              string
