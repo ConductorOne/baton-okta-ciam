@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"github.com/conductorone/baton-sdk/pkg/field"
@@ -40,7 +40,8 @@ var relationships = []field.SchemaFieldRelationship{
 	field.FieldsDependentOn([]field.SchemaField{awsSourceIdentityMode, awsAllowGroupToDirectAssignmentConversionForProvisioning}, []field.SchemaField{awsIdentityCenterMode}),
 }
 
-var configuration = field.NewConfiguration([]field.SchemaField{
+//go:generate go run ./gen
+var Config = field.NewConfiguration([]field.SchemaField{
 	domain,
 	apiToken,
 	oktaClientId,
