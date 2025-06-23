@@ -6,14 +6,15 @@ import (
 	"os"
 
 	"github.com/conductorone/baton-sdk/pkg/connectorbuilder"
+	"github.com/conductorone/baton-sdk/pkg/field"
 	"github.com/conductorone/baton-sdk/pkg/types"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
 
 	"github.com/conductorone/baton-okta-ciam/pkg/config"
 	"github.com/conductorone/baton-okta-ciam/pkg/connector"
 	configschema "github.com/conductorone/baton-sdk/pkg/config"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
+	"go.uber.org/zap"
 )
 
 var version = "dev"
@@ -34,16 +35,22 @@ func main() {
 	}
 }
 
-func getConnector(ctx context.Context, v *viper.Viper) (types.ConnectorServer, error) {
+func getConnector(ctx context.Context, oc *config.OktaCiam) (types.ConnectorServer, error) {
 	l := ctxzap.Extract(ctx)
+
+	err := field.Validate(config.Config, oc)
+	if err != nil {
+		return nil, err
+	}
+
 	ccfg := &connector.Config{
-		Domain:              v.GetString("domain"),
-		ApiToken:            v.GetString("api-token"),
-		CiamEmailDomains:    v.GetStringSlice("ciam-email-domains"),
-		Cache:               v.GetBool("cache"),
-		CacheTTI:            v.GetInt32("cache-tti"),
-		CacheTTL:            v.GetInt32("cache-ttl"),
-		SkipSecondaryEmails: v.GetBool("skip-secondary-emails"),
+		Domain:              oc.Domain,
+		ApiToken:            oc.ApiToken,
+		CiamEmailDomains:    oc.CiamEmailDomains,
+		Cache:               oc.Cache,
+		CacheTTI:            int32(oc.CacheTti),
+		CacheTTL:            int32(oc.CacheTtl),
+		SkipSecondaryEmails: oc.SkipSecondaryEmails,
 	}
 
 	cb, err := connector.New(ctx, ccfg)
