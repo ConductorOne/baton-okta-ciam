@@ -46,10 +46,11 @@ jobs:
       BATON_DOMAIN: ${{ secrets.BATON_DOMAIN }}
       BATON_SYNC_CUSTOM_ROLES: true
       # The following parameters are passed to grant/revoke commands
-      CONNECTOR_GRANT: 'app:0oaf4rf37pg7W4B6a5d7:access:user:00uacdfcbiu3Igbmz5d7'
-      CONNECTOR_ENTITLEMENT: 'app:0oaf4rf37pg7W4B6a5d7:access'
+      CONNECTOR_GRANT: 'app:0oasl6wittARgAxjE697:access:user:00usl7nnmzxvsCYZM697'
+      # Okta Workflows App Access
+      CONNECTOR_ENTITLEMENT: 'app:0oasl6wittARgAxjE697:access'
       CONNECTOR_PRINCIPAL_TYPE: 'user'
-      CONNECTOR_PRINCIPAL: '00uacdfcbiu3Igbmz5d7'
+      CONNECTOR_PRINCIPAL: '00usl7nnmzxvsCYZM697'
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
@@ -85,7 +86,7 @@ jobs:
         env:
             BATON_ENTITLEMENT: 'resourceset-binding:iamkg0dn9dH05taAc5d7:cr0kg059ztsV0pNMh5d7:member'
             BATON_PRINCIPAL_TYPE: 'user'
-            BATON_PRINCIPAL: '00uacdfcbiu3Igbmz5d7'
+            BATON_PRINCIPAL: '00usl7nnmzxvsCYZM697'
         run: | 
           ./baton-okta-ciam && ./baton-okta-ciam --grant-entitlement ${{ env.BATON_ENTITLEMENT }} --grant-principal ${{ env.BATON_PRINCIPAL }} --grant-principal-type ${{ env.BATON_PRINCIPAL_TYPE }}
       - name: Revoke custom role grants
