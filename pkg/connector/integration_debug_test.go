@@ -4,12 +4,10 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	v2 "github.com/conductorone/baton-sdk/pb/c1/connector/v2"
 	"github.com/conductorone/baton-sdk/pkg/pagination"
-	ent "github.com/conductorone/baton-sdk/pkg/types/entitlement"
 	"github.com/conductorone/baton-sdk/pkg/uhttp"
 	"github.com/okta/okta-sdk-golang/v2/okta"
 	"github.com/stretchr/testify/require"
@@ -44,54 +42,6 @@ func TestUserResourceTypeList(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, resp)
 	require.NotNil(t, oktaUsers)
-}
-
-func parseEntitlementID(id string) (*v2.ResourceId, []string, error) {
-	parts := strings.Split(id, ":")
-	// Need to be at least 3 parts type:entitlement_id:slug
-	if len(parts) < 3 || len(parts) > 3 {
-		return nil, nil, fmt.Errorf("okta-connector: invalid resource id")
-	}
-
-	resourceId := &v2.ResourceId{
-		ResourceType: parts[0],
-		Resource:     strings.Join(parts[1:len(parts)-1], ":"),
-	}
-
-	return resourceId, parts, nil
-}
-
-func parseBindingEntitlementID(id string) (*v2.ResourceId, []string, error) {
-	parts := strings.Split(id, ":")
-	// Need to be at least 3 parts type:entitlement_id:slug
-	if len(parts) < 4 || len(parts) > 4 {
-		return nil, nil, fmt.Errorf("okta-connector: invalid resource id")
-	}
-
-	resourceId := &v2.ResourceId{
-		ResourceType: parts[0],
-		Resource:     strings.Join(parts[1:len(parts)-1], ":"),
-	}
-
-	return resourceId, parts, nil
-}
-
-func getRoleResourceForTesting(ctxTest context.Context, id, label, ctype string) (*v2.Resource, error) {
-	return roleResource(ctxTest, &okta.Role{
-		Id:    id,
-		Label: label,
-		Type:  ctype,
-	}, resourceTypeRole)
-}
-
-func getEntitlementForTesting(resource *v2.Resource, resourceDisplayName, entitlement string) *v2.Entitlement {
-	options := []ent.EntitlementOption{
-		ent.WithGrantableTo(resourceTypeRole),
-		ent.WithDisplayName(fmt.Sprintf("%s resource %s", resourceDisplayName, entitlement)),
-		ent.WithDescription(fmt.Sprintf("%s of %s okta", entitlement, resourceDisplayName)),
-	}
-
-	return ent.NewAssignmentEntitlement(resource, entitlement, options...)
 }
 
 func getClietForTesting(ctx context.Context, cfg *Config) (*Okta, error) {

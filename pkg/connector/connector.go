@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
 
 	v2 "github.com/conductorone/baton-sdk/pb/c1/connector/v2"
 	"github.com/conductorone/baton-sdk/pkg/annotations"
@@ -26,7 +25,6 @@ type Okta struct {
 	apiToken            string
 	ciamConfig          *ciamConfig
 	skipSecondaryEmails bool
-	userRoleCache       sync.Map
 }
 
 type ciamConfig struct {

@@ -3,7 +3,6 @@ package connector
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -14,7 +13,6 @@ import (
 	sdkGrant "github.com/conductorone/baton-sdk/pkg/types/grant"
 	sdkResource "github.com/conductorone/baton-sdk/pkg/types/resource"
 	"github.com/okta/okta-sdk-golang/v2/okta"
-	"github.com/okta/okta-sdk-golang/v2/okta/query"
 )
 
 var errMissingRolePermissions = errors.New("okta-connectorv2: missing role permissions")
@@ -75,74 +73,6 @@ func userHasRoleAccess(administratorRoleFlags *administratorRoleFlags, resource 
 	}
 
 	return false
-}
-
-func listOktaIamCustomRoles(
-	ctx context.Context,
-	client *okta.Client,
-	token *pagination.Token,
-	qp *query.Params,
-) ([]*okta.Role, *responseContext, error) {
-	url := apiPathListIamCustomRoles
-	if qp != nil {
-		url += qp.String()
-	}
-
-	rq := client.CloneRequestExecutor()
-	req, err := rq.
-		WithAccept(ContentType).
-		WithContentType(ContentType).
-		NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var role *CustomRoles
-	resp, err := rq.Do(ctx, req, &role)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	respCtx, err := responseToContext(token, resp)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return role.Roles, respCtx, nil
-}
-
-func listAllUsersWithRoleAssignments(
-	ctx context.Context,
-	client *okta.Client,
-	token *pagination.Token,
-	qp *query.Params,
-) ([]*RoleAssignment, *responseContext, error) {
-	url := apiPathListAllUsersWithRoleAssignments
-	if qp != nil {
-		url += qp.String()
-	}
-
-	rq := client.CloneRequestExecutor()
-	req, err := rq.
-		WithAccept(ContentType).
-		WithContentType(ContentType).
-		NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var role *RoleAssignments
-	resp, err := rq.Do(ctx, req, &role)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	respCtx, err := responseToContext(token, resp)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return role.RoleAssignments, respCtx, nil
 }
 
 func getOrgSettings(ctx context.Context, client *okta.Client, token *pagination.Token) (*okta.OrgSetting, *responseContext, error) {
@@ -272,23 +202,4 @@ func roleGrant(userID string, resource *v2.Resource) *v2.Grant {
 			Id: fmtGrantIdV1(V1MembershipEntitlementID(resource.Id.Resource), userID),
 		}),
 	)
-}
-
-func roleGroupGrant(groupID string, resource *v2.Resource, shouldExpand bool) *v2.Grant {
-	gr := &v2.Resource{Id: &v2.ResourceId{ResourceType: resourceTypeGroup.Id, Resource: groupID}}
-
-	grantOpts := []sdkGrant.GrantOption{
-		sdkGrant.WithAnnotation(&v2.V1Identifier{
-			Id: fmtGrantIdV1(V1MembershipEntitlementID(resource.Id.Resource), groupID),
-		}),
-	}
-
-	if shouldExpand {
-		grantOpts = append(grantOpts, sdkGrant.WithAnnotation(&v2.GrantExpandable{
-			EntitlementIds: []string{fmt.Sprintf("group:%s:member", groupID)},
-			Shallow:        true,
-		}))
-	}
-
-	return sdkGrant.NewGrant(resource, "assigned", gr, grantOpts...)
 }

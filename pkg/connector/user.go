@@ -218,13 +218,6 @@ func ciamUserBuilder(connector *Okta) *userResourceType {
 	}
 }
 
-func userBuilder(connector *Okta) *userResourceType {
-	return &userResourceType{
-		resourceType: resourceTypeUser,
-		connector:    connector,
-	}
-}
-
 // Create a new connector resource for a okta user.
 func userResource(ctx context.Context, user *okta.User, skipSecondaryEmails bool) (*v2.Resource, error) {
 	firstName, lastName := userName(user)
