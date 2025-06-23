@@ -7,9 +7,6 @@ import (
 var (
 	domain             = field.StringField("domain", field.WithRequired(true), field.WithDescription("The URL for the Okta organization"))
 	apiToken           = field.StringField("api-token", field.WithDescription("The API token for the service account"))
-	oktaClientId       = field.StringField("okta-client-id", field.WithDescription("The Okta Client ID"))
-	oktaPrivateKeyId   = field.StringField("okta-private-key-id", field.WithDescription("The Okta Private Key ID"))
-	oktaPrivateKey     = field.StringField("okta-private-key", field.WithDescription("The Okta Private Key. This can be the whole private key or the path to the private key"))
 	syncInactivateApps = field.BoolField("sync-inactive-apps", field.WithDescription("Whether to sync inactive apps or not"), field.WithDefaultValue(true))
 	oktaProvisioning   = field.BoolField("okta-provisioning")
 	ciam               = field.BoolField("ciam", field.WithDescription("Whether to run in CIAM mode or not. In CIAM mode, only roles and the users assigned to roles are synced"))
@@ -23,19 +20,12 @@ var (
 	SyncSecrets         = field.BoolField("sync-secrets", field.WithDescription("Whether to sync secrets or not"), field.WithDefaultValue(false))
 )
 
-var relationships = []field.SchemaFieldRelationship{
-	field.FieldsDependentOn([]field.SchemaField{oktaPrivateKeyId, oktaPrivateKey}, []field.SchemaField{oktaClientId}),
-	field.FieldsMutuallyExclusive(apiToken, oktaClientId),
-	field.FieldsAtLeastOneUsed(apiToken, oktaClientId),
-}
+var relationships = []field.SchemaFieldRelationship{}
 
 //go:generate go run ./gen
 var Config = field.NewConfiguration([]field.SchemaField{
 	domain,
 	apiToken,
-	oktaClientId,
-	oktaPrivateKey,
-	oktaPrivateKeyId,
 	syncInactivateApps,
 	oktaProvisioning,
 	ciam,
