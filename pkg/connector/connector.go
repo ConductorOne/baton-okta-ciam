@@ -25,9 +25,7 @@ type Okta struct {
 	domain              string
 	apiToken            string
 	ciamConfig          *ciamConfig
-	syncCustomRoles     bool
 	skipSecondaryEmails bool
-	SyncSecrets         bool
 	userRoleCache       sync.Map
 }
 
@@ -44,9 +42,7 @@ type Config struct {
 	Cache               bool
 	CacheTTI            int32
 	CacheTTL            int32
-	SyncCustomRoles     bool
 	SkipSecondaryEmails bool
-	SyncSecrets         bool
 }
 
 func v1AnnotationsForResourceType(resourceTypeID string, skipEntitlementsAndGrants bool) annotations.Annotations {
@@ -110,10 +106,6 @@ func (c *Okta) ListResourceTypes(ctx context.Context, request *v2.ResourceTypesS
 	resourceTypes := []*v2.ResourceType{
 		resourceTypeUser,
 		resourceTypeGroup,
-	}
-
-	if c.syncCustomRoles {
-		resourceTypes = append(resourceTypes, resourceTypeCustomRole, resourceTypeResourceSets, resourceTypeResourceSetsBindings)
 	}
 
 	return &v2.ResourceTypesServiceListResourceTypesResponse{
@@ -265,9 +257,7 @@ func New(ctx context.Context, cfg *Config) (*Okta, error) {
 		clientV5:            oktaClientV5,
 		domain:              cfg.Domain,
 		apiToken:            cfg.ApiToken,
-		syncCustomRoles:     cfg.SyncCustomRoles,
 		skipSecondaryEmails: cfg.SkipSecondaryEmails,
-		SyncSecrets:         cfg.SyncSecrets,
 		ciamConfig: &ciamConfig{
 			EmailDomains: cfg.CiamEmailDomains,
 		},
