@@ -105,12 +105,6 @@ var (
 		DisplayName: "Resource Set Binding",
 		Annotations: v1AnnotationsForResourceType("resourceset-binding", false),
 	}
-	resourceTypeApiToken = &v2.ResourceType{
-		Id:          "api-token",
-		DisplayName: "API Token",
-		Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_SECRET},
-		Annotations: v1AnnotationsForResourceType("api-token", true),
-	}
 )
 
 func (o *Okta) ResourceSyncers(ctx context.Context) []connectorbuilder.ResourceSyncer {
@@ -128,10 +122,6 @@ func (c *Okta) ListResourceTypes(ctx context.Context, request *v2.ResourceTypesS
 
 	if c.syncCustomRoles {
 		resourceTypes = append(resourceTypes, resourceTypeCustomRole, resourceTypeResourceSets, resourceTypeResourceSetsBindings)
-	}
-
-	if c.SyncSecrets {
-		resourceTypes = append(resourceTypes, resourceTypeApiToken)
 	}
 
 	return &v2.ResourceTypesServiceListResourceTypesResponse{

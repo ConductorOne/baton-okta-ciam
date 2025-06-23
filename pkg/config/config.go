@@ -16,7 +16,6 @@ var (
 	cacheTTL            = field.IntField("cache-ttl", field.WithDescription("Response cache time to live in seconds"), field.WithDefaultValue(300))
 	syncCustomRoles     = field.BoolField("sync-custom-roles", field.WithDescription("Enable syncing custom roles"), field.WithDefaultValue(false))
 	skipSecondaryEmails = field.BoolField("skip-secondary-emails", field.WithDescription("Skip syncing secondary emails"), field.WithDefaultValue(false))
-	SyncSecrets         = field.BoolField("sync-secrets", field.WithDescription("Whether to sync secrets or not"), field.WithDefaultValue(false))
 )
 
 var relationships = []field.SchemaFieldRelationship{}
@@ -33,5 +32,4 @@ var Config = field.NewConfiguration([]field.SchemaField{
 	cacheTTL,
 	syncCustomRoles,
 	skipSecondaryEmails,
-	SyncSecrets,
 }, field.WithConstraints(relationships...))

@@ -14,7 +14,6 @@ type OktaCiam struct {
 	CacheTtl int `mapstructure:"cache-ttl"`
 	SyncCustomRoles bool `mapstructure:"sync-custom-roles"`
 	SkipSecondaryEmails bool `mapstructure:"skip-secondary-emails"`
-	SyncSecrets bool `mapstructure:"sync-secrets"`
 }
 
 func (c* OktaCiam) findFieldByTag(tagValue string) (any, bool) {
