@@ -24,7 +24,6 @@ type Okta struct {
 	clientV5            *oktav5.APIClient
 	domain              string
 	apiToken            string
-	syncInactiveApps    bool
 	ciamConfig          *ciamConfig
 	syncCustomRoles     bool
 	skipSecondaryEmails bool
@@ -41,7 +40,6 @@ type Config struct {
 	ApiToken         string
 	CiamEmailDomains []string
 
-	SyncInactiveApps    bool
 	OktaProvisioning    bool
 	Cache               bool
 	CacheTTI            int32
@@ -88,12 +86,6 @@ var (
 		DisplayName: "Group",
 		Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_GROUP},
 		Annotations: v1AnnotationsForResourceType("group", false),
-	}
-	resourceTypeApp = &v2.ResourceType{
-		Id:          "app",
-		DisplayName: "App",
-		Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_APP},
-		Annotations: v1AnnotationsForResourceType("app", false),
 	}
 	resourceTypeResourceSets = &v2.ResourceType{
 		Id:          "resource-set",
@@ -273,7 +265,6 @@ func New(ctx context.Context, cfg *Config) (*Okta, error) {
 		clientV5:            oktaClientV5,
 		domain:              cfg.Domain,
 		apiToken:            cfg.ApiToken,
-		syncInactiveApps:    cfg.SyncInactiveApps,
 		syncCustomRoles:     cfg.SyncCustomRoles,
 		skipSecondaryEmails: cfg.SkipSecondaryEmails,
 		SyncSecrets:         cfg.SyncSecrets,

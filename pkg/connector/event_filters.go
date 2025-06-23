@@ -30,44 +30,6 @@ var (
 			return nil
 		},
 	}
-	ApplicationLifecycleFilter = EventFilter{
-		EventTypes:  mapset.NewSet[string]("app.lifecycle.create", "application.lifecycle.update"),
-		TargetTypes: mapset.NewSet[string]("AppInstance"),
-		EventHandler: func(event *oktaSDK.LogEvent, targetMap map[string][]*oktaSDK.LogTarget, rv *v2.Event) error {
-			if len(targetMap["AppInstance"]) != 1 {
-				return fmt.Errorf("okta-connectorv2: expected 1 AppInstance target, got %d", len(targetMap["AppInstance"]))
-			}
-			appInstance := targetMap["AppInstance"][0]
-			rv.Event = &v2.Event_ResourceChangeEvent{
-				ResourceChangeEvent: &v2.ResourceChangeEvent{
-					ResourceId: &v2.ResourceId{
-						ResourceType: resourceTypeApp.Id,
-						Resource:     appInstance.Id,
-					},
-				},
-			}
-			return nil
-		},
-	}
-	ApplicationMembershipFilter = EventFilter{
-		EventTypes:  mapset.NewSet[string]("application.user_membership.add", "application.user_membership.update"),
-		TargetTypes: mapset.NewSet[string]("AppInstance"),
-		EventHandler: func(event *oktaSDK.LogEvent, targetMap map[string][]*oktaSDK.LogTarget, rv *v2.Event) error {
-			if len(targetMap["AppInstance"]) != 1 {
-				return fmt.Errorf("okta-connectorv2: expected 1 AppInstance target, got %d", len(targetMap["AppInstance"]))
-			}
-			appInstance := targetMap["AppInstance"][0]
-			rv.Event = &v2.Event_ResourceChangeEvent{
-				ResourceChangeEvent: &v2.ResourceChangeEvent{
-					ResourceId: &v2.ResourceId{
-						ResourceType: resourceTypeApp.Id,
-						Resource:     appInstance.Id,
-					},
-				},
-			}
-			return nil
-		},
-	}
 	RoleMembershipFilter = EventFilter{
 		EventTypes:  mapset.NewSet[string]("user.account.privilege.grant"),
 		TargetTypes: mapset.NewSet[string]("ROLE", "User"),

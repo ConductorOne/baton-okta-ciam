@@ -43,8 +43,6 @@ func (connector *Okta) ListEvents(
 	activeFilters := []EventFilter{
 		UsageFilter,
 		GroupChangeFilter,
-		ApplicationLifecycleFilter,
-		ApplicationMembershipFilter,
 		RoleMembershipFilter,
 		UserLifecycleFilter,
 	}
