@@ -1,8 +1,8 @@
 ![Baton Logo](./docs/images/baton-logo.png)
 
-# `baton-okta` [![Go Reference](https://pkg.go.dev/badge/github.com/conductorone/baton-okta.svg)](https://pkg.go.dev/github.com/conductorone/baton-okta) ![main ci](https://github.com/conductorone/baton-okta/actions/workflows/main.yaml/badge.svg)
+# `baton-okta-ciam` [![Go Reference](https://pkg.go.dev/badge/github.com/conductorone/baton-okta-ciam.svg)](https://pkg.go.dev/github.com/conductorone/baton-okta-ciam) ![main ci](https://github.com/conductorone/baton-okta-ciam/actions/workflows/main.yaml/badge.svg)
 
-`baton-okta` is a connector for Okta built using the [Baton SDK](https://github.com/conductorone/baton-sdk). It communicates with the Okta API to sync data about which groups and users have access to applications, groups, and roles within an Okta domain.
+`baton-okta-ciam` is a connector for Okta built using the [Baton SDK](https://github.com/conductorone/baton-sdk). It communicates with the Okta API to sync data about which groups and users have access to applications, groups, and roles within an Okta domain.
 
 Check out [Baton](https://github.com/conductorone/baton) to learn more about the project in general.
 
@@ -11,9 +11,9 @@ Check out [Baton](https://github.com/conductorone/baton) to learn more about the
 ## brew
 
 ```
-brew install conductorone/baton/baton conductorone/baton/baton-okta
+brew install conductorone/baton/baton conductorone/baton/baton-okta-ciam
 
-BATON_API_TOKEN=oktaAPIToken BATON_DOMAIN=domain-1234.okta.com baton-okta
+BATON_API_TOKEN=oktaAPIToken BATON_DOMAIN=domain-1234.okta.com baton-okta-ciam
 baton resources
 ```
 
@@ -23,14 +23,14 @@ Or auth using a public/private keypair
 BATON_OKTA_CLIENT_ID=appClientID \
 BATON_OKTA_PRIVATE_KEY='auth.key' \
 BATON_OKTA_PRIVATE_KEY_ID=appKID \
-BATON_DOMAIN=domain-1234.okta.com baton-okta
+BATON_DOMAIN=domain-1234.okta.com baton-okta-ciam
 baton resources
 ```
 
 ## docker
 
 ```
-docker run --rm -v $(pwd):/out -e BATON_API_TOKEN=oktaAPIToken -e BATON_DOMAIN=domain-1234.okta.com ghcr.io/conductorone/baton-okta:latest -f "/out/sync.c1z"
+docker run --rm -v $(pwd):/out -e BATON_API_TOKEN=oktaAPIToken -e BATON_DOMAIN=domain-1234.okta.com ghcr.io/conductorone/baton-okta-ciam:latest -f "/out/sync.c1z"
 docker run --rm -v $(pwd):/out ghcr.io/conductorone/baton:latest -f "/out/sync.c1z" resources
 ```
 
@@ -38,15 +38,15 @@ docker run --rm -v $(pwd):/out ghcr.io/conductorone/baton:latest -f "/out/sync.c
 
 ```
 go install github.com/conductorone/baton/cmd/baton@main
-go install github.com/conductorone/baton-okta/cmd/baton-okta@main
+go install github.com/conductorone/baton-okta-ciam/cmd/baton-okta-ciam@main
 
-BATON_API_TOKEN=oktaAPIToken BATON_DOMAIN=domain-1234.okta.com baton-okta
+BATON_API_TOKEN=oktaAPIToken BATON_DOMAIN=domain-1234.okta.com baton-okta-ciam
 baton resources
 ```
 
 # Data Model
 
-`baton-okta` will pull down information about the following Okta resources:
+`baton-okta-ciam` will pull down information about the following Okta resources:
 
 - Applications
 - Groups
@@ -56,7 +56,7 @@ baton resources
 - Resource-Sets
 - Resourceset-Bindings
 
-By default, `baton-okta` will sync information for inactive applications. You can exclude inactive applications setting the `--sync-inactive-apps` flag to `false`.
+By default, `baton-okta-ciam` will sync information for inactive applications. You can exclude inactive applications setting the `--sync-inactive-apps` flag to `false`.
 
 For syncing custom roles `--sync-custom-roles` must be provided. Its default value is `false`.
 
@@ -73,7 +73,7 @@ Member `00ujp51vjgWd6ylZ6697`
 
 - Granting custom roles for users.
 ```
-BATON_API_TOKEN='oktaAPIToken' BATON_DOMAIN='domain-1234.okta.com' baton-okta \
+BATON_API_TOKEN='oktaAPIToken' BATON_DOMAIN='domain-1234.okta.com' baton-okta-ciam \
 --grant-entitlement 'resourceset-binding:iamkuwy3gqcfNexfQ697:cr0kuwv5507zJCtSy697:member' --grant-principal-type 'user' --grant-principal '00ujp51vjgWd6ylZ6697'
 ```
 
@@ -81,13 +81,13 @@ In the previous example we granted the custom role `cr0kuwv5507zJCtSy697` to use
 
 - Revoking custom role grants(Unassigns a Member)
 ```
-BATON_API_TOKEN='oktaAPIToken' BATON_DOMAIN='domain-1234.okta.com' baton-okta \
+BATON_API_TOKEN='oktaAPIToken' BATON_DOMAIN='domain-1234.okta.com' baton-okta-ciam \
 --revoke-grant 'resourceset-binding:iamkuwy3gqcfNexfQ697:cr0kuwv5507zJCtSy697:member:user:00ujp51vjgWd6ylZ6697' 
 ```
 
 - Revoking everything associated to custom role(Deletes a Binding of a Role)
 ```
-BATON_API_TOKEN='oktaAPIToken' BATON_DOMAIN='domain-1234.okta.com' baton-okta \
+BATON_API_TOKEN='oktaAPIToken' BATON_DOMAIN='domain-1234.okta.com' baton-okta-ciam \
 resource-set:iamkuwy3gqcfNexfQ697:bindings:custom-role:cr0kuwv5507zJCtSy697 
 ```
 
@@ -97,14 +97,14 @@ We started Baton because we were tired of taking screenshots and manually buildi
 
 See [CONTRIBUTING.md](https://github.com/ConductorOne/baton/blob/main/CONTRIBUTING.md) for more details.
 
-# `baton-okta` Command Line Usage
+# `baton-okta-ciam` Command Line Usage
 
 ```
-baton-okta
+baton-okta-ciam
 
 Usage:
-  baton-okta [flags]
-  baton-okta [command]
+  baton-okta-ciam [flags]
+  baton-okta-ciam [command]
 
 Available Commands:
   capabilities       Get connector capabilities
@@ -124,7 +124,7 @@ Flags:
       --client-secret string         The client secret used to authenticate with ConductorOne ($BATON_CLIENT_SECRET)
       --domain string                required: The URL for the Okta organization ($BATON_DOMAIN)
   -f, --file string                  The path to the c1z file to sync with ($BATON_FILE) (default "sync.c1z")
-  -h, --help                         help for baton-okta
+  -h, --help                         help for baton-okta-ciam
       --log-format string            The output format for logs: json, console ($BATON_LOG_FORMAT) (default "json")
       --log-level string             The log level: debug, info, warn, error ($BATON_LOG_LEVEL) (default "info")
       --okta-client-id string        The Okta Client ID ($BATON_OKTA_CLIENT_ID)
@@ -138,7 +138,7 @@ Flags:
       --sync-inactive-apps           Whether to sync inactive apps or not ($BATON_SYNC_INACTIVE_APPS) (default true)
       --sync-secrets                 Whether to sync secrets or not ($BATON_SYNC_SECRETS)
       --ticketing                    This must be set to enable ticketing support ($BATON_TICKETING)
-  -v, --version                      version for baton-okta
+  -v, --version                      version for baton-okta-ciam
 
-Use "baton-okta [command] --help" for more information about a command.
+Use "baton-okta-ciam [command] --help" for more information about a command.
 ```

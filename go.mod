@@ -1,4 +1,4 @@
-module github.com/conductorone/baton-okta
+module github.com/conductorone/baton-okta-ciam
 
 go 1.23.4
 
