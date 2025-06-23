@@ -25,6 +25,10 @@ import (
 )
 
 const (
+	usersUrl = "/api/v1/users"
+)
+
+const (
 	unknownProfileValue       = "unknown"
 	userStatusSuspended       = "SUSPENDED"
 	userStatusDeprovisioned   = "DEPROVISIONED"

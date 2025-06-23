@@ -34,22 +34,6 @@ var standardRoleTypes = []*okta.Role{
 	{Type: "GROUP_MEMBERSHIP_ADMIN", Label: "Group Membership Administrator"},
 }
 
-type CustomRoles struct {
-	Roles []*okta.Role `json:"roles,omitempty"`
-	Links interface{}  `json:"_links,omitempty"`
-}
-
-type RoleAssignment struct {
-	Id    string      `json:"id,omitempty"`
-	Orn   string      `json:"orn,omitempty"`
-	Links interface{} `json:"_links,omitempty"`
-}
-
-type RoleAssignments struct {
-	RoleAssignments []*RoleAssignment `json:"value,omitempty"`
-	Links           interface{}       `json:"_links,omitempty"`
-}
-
 const (
 	apiPathListAdministrators              = "/api/internal/administrators"
 	apiPathListIamCustomRoles              = "/api/v1/iam/roles"
