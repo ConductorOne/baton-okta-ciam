@@ -2,7 +2,6 @@ package connector
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -23,6 +22,10 @@ import (
 	"github.com/okta/okta-sdk-golang/v2/okta"
 	"github.com/okta/okta-sdk-golang/v2/okta/query"
 	"go.uber.org/zap"
+)
+
+const (
+	usersUrl = "/api/v1/users"
 )
 
 const (
@@ -52,19 +55,8 @@ func (o *userResourceType) List(
 	resourceID *v2.ResourceId,
 	token *pagination.Token,
 ) ([]*v2.Resource, string, annotations.Annotations, error) {
-	if o.connector.awsConfig != nil && o.connector.awsConfig.Enabled {
-		awsConfig, err := o.connector.getAWSApplicationConfig(ctx)
-		if err != nil {
-			return nil, "", nil, fmt.Errorf("error getting aws app settings config")
-		}
-		// TODO(lauren) get users for all groups matching pattern when user group mapping enabled
-		if !awsConfig.UseGroupMapping {
-			return o.listAWSAccountUsers(ctx, resourceID, token)
-		}
-	}
-
-	// If we are in ciam mode, and there are no email filters specified, don't sync users.
-	if o.connector.ciamConfig.Enabled && len(o.emailFilters) == 0 {
+	// If there are no email filters specified, don't sync users.
+	if len(o.emailFilters) == 0 {
 		return nil, "", nil, nil
 	}
 	bag, page, err := parsePageToken(token.Token, &v2.ResourceId{ResourceType: resourceTypeUser.Id})
@@ -91,7 +83,7 @@ func (o *userResourceType) List(
 	}
 
 	for _, user := range users {
-		if o.connector.ciamConfig.Enabled && !shouldIncludeOktaUser(user, o.emailFilters) {
+		if !shouldIncludeOktaUser(user, o.emailFilters) {
 			continue
 		}
 		resource, err := userResource(ctx, user, o.connector.skipSecondaryEmails)
@@ -108,78 +100,6 @@ func (o *userResourceType) List(
 	}
 
 	return rv, pageToken, annos, nil
-}
-
-func (o *userResourceType) listAWSAccountUsers(
-	ctx context.Context,
-	resourceID *v2.ResourceId,
-	token *pagination.Token,
-) ([]*v2.Resource, string, annotations.Annotations, error) {
-	bag, page, err := parsePageToken(token.Token, &v2.ResourceId{ResourceType: resourceTypeUser.Id})
-	if err != nil {
-		return nil, "", nil, fmt.Errorf("okta-aws-connector: failed to parse page token: %w", err)
-	}
-
-	var rv []*v2.Resource
-	qp := queryParamsExpand(token.Size, page, "user")
-	appUsers, respContext, err := listApplicationUsers(ctx, o.connector.client, o.connector.awsConfig.OktaAppId, token, qp)
-	if err != nil {
-		return nil, "", nil, fmt.Errorf("okta-aws-connector: list application users %w", err)
-	}
-
-	nextPage, annos, err := parseResp(respContext.OktaResponse)
-	if err != nil {
-		return nil, "", nil, fmt.Errorf("okta-aws-connector: failed to parse response: %w", err)
-	}
-
-	err = bag.Next(nextPage)
-	if err != nil {
-		return nil, "", nil, fmt.Errorf("okta-aws-connector: failed to fetch bag.Next: %w", err)
-	}
-
-	for _, appUser := range appUsers {
-		user, err := embeddedOktaUserFromAppUser(appUser)
-		if err != nil {
-			return nil, "", nil, fmt.Errorf("okta-aws-connector: failed to get user from app user response: %w", err)
-		}
-		resource, err := userResource(ctx, user, o.connector.skipSecondaryEmails)
-		if err != nil {
-			return nil, "", nil, err
-		}
-		rv = append(rv, resource)
-	}
-
-	pageToken, err := bag.Marshal()
-	if err != nil {
-		return nil, "", nil, err
-	}
-
-	return rv, pageToken, annos, nil
-}
-
-func embeddedOktaUserFromAppUser(appUser *okta.AppUser) (*okta.User, error) {
-	embedded := appUser.Embedded
-	if embedded == nil {
-		return nil, fmt.Errorf("app user '%s' embedded data was nil", appUser.Id)
-	}
-	embeddedMap, ok := embedded.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("app user '%s' embedded data was not a map", appUser.Id)
-	}
-	embeddedUser, ok := embeddedMap["user"]
-	if !ok {
-		return nil, fmt.Errorf("embedded user data was nil for app user '%s'", appUser.Id)
-	}
-	userJSON, err := json.Marshal(embeddedUser)
-	if err != nil {
-		return nil, fmt.Errorf("error marshalling embedded user data for app user '%s': %w", appUser.Id, err)
-	}
-	oktaUser := &okta.User{}
-	err = json.Unmarshal(userJSON, &oktaUser)
-	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling embedded user data for app user '%s': %w", appUser.Id, err)
-	}
-	return oktaUser, nil
 }
 
 func shouldIncludeOktaUser(u *okta.User, emailDomainFilters []string) bool {
@@ -298,13 +218,6 @@ func ciamUserBuilder(connector *Okta) *userResourceType {
 	return &userResourceType{
 		resourceType: resourceTypeUser,
 		emailFilters: loweredFilters,
-		connector:    connector,
-	}
-}
-
-func userBuilder(connector *Okta) *userResourceType {
-	return &userResourceType{
-		resourceType: resourceTypeUser,
 		connector:    connector,
 	}
 }
@@ -546,19 +459,8 @@ func (o *userResourceType) Get(ctx context.Context, resourceId *v2.ResourceId, p
 
 	var annos annotations.Annotations
 
-	if o.connector.awsConfig != nil && o.connector.awsConfig.Enabled {
-		awsConfig, err := o.connector.getAWSApplicationConfig(ctx)
-		if err != nil {
-			return nil, nil, fmt.Errorf("error getting aws app settings config")
-		}
-		// TODO: check if user is in any groups matching pattern when user group mapping enabled
-		if !awsConfig.UseGroupMapping {
-			return o.findAWSAccountUser(ctx, resourceId.Resource)
-		}
-	}
-
-	// If we are in ciam mode, and there are no email filters specified, don't sync user.
-	if o.connector.ciamConfig.Enabled && len(o.emailFilters) == 0 {
+	// If there are no email filters specified, don't sync user.
+	if len(o.emailFilters) == 0 {
 		return nil, nil, nil
 	}
 
@@ -578,7 +480,7 @@ func (o *userResourceType) Get(ctx context.Context, resourceId *v2.ResourceId, p
 		return nil, annos, nil
 	}
 
-	if o.connector.ciamConfig.Enabled && !shouldIncludeOktaUser(user, o.emailFilters) {
+	if !shouldIncludeOktaUser(user, o.emailFilters) {
 		return nil, annos, nil
 	}
 
@@ -588,40 +490,6 @@ func (o *userResourceType) Get(ctx context.Context, resourceId *v2.ResourceId, p
 	}
 
 	return resource, annos, nil
-}
-
-func (o *userResourceType) findAWSAccountUser(
-	ctx context.Context,
-	oktaUserID string,
-) (*v2.Resource, annotations.Annotations, error) {
-	qp := query.NewQueryParams(query.WithExpand("user"))
-	appUser, _, err := getApplicationUser(ctx, o.connector.client, o.connector.awsConfig.OktaAppId, oktaUserID, qp)
-	if err != nil {
-		return nil, nil, fmt.Errorf("okta-aws-connector: find application user %w", err)
-	}
-
-	if appUser == nil {
-		return nil, nil, nil
-	}
-
-	user, err := embeddedOktaUserFromAppUser(appUser)
-	if err != nil {
-		return nil, nil, fmt.Errorf("okta-aws-connector: failed to get user from find app user response: %w", err)
-	}
-	resource, err := userResource(ctx, user, o.connector.skipSecondaryEmails)
-	if err != nil {
-		return nil, nil, err
-	}
-	return resource, nil, nil
-}
-
-func getApplicationUser(ctx context.Context, client *okta.Client, appID string, oktaUserID string, qp *query.Params) (*okta.AppUser, *responseContext, error) {
-	applicationUser, resp, err := client.Application.GetApplicationUser(ctx, appID, oktaUserID, qp)
-	if err != nil {
-		return nil, nil, fmt.Errorf("okta-connectorv2: failed to fetch app user from okta: %w", handleOktaResponseError(resp, err))
-	}
-
-	return applicationUser, &responseContext{OktaResponse: resp}, nil
 }
 
 func getUser(ctx context.Context, client *okta.Client, oktaUserID string) (*okta.User, *responseContext, error) {

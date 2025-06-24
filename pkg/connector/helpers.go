@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/url"
 
-	v2 "github.com/conductorone/baton-sdk/pb/c1/connector/v2"
 	"github.com/conductorone/baton-sdk/pkg/pagination"
 	"github.com/okta/okta-sdk-golang/v2/okta"
 	"github.com/okta/okta-sdk-golang/v2/okta/query"
@@ -37,13 +36,6 @@ func fmtResourceIdV1(id string) string {
 	return id
 }
 
-func fmtResourceId(resourceTypeID string, id string) *v2.ResourceId {
-	return &v2.ResourceId{
-		ResourceType: resourceTypeID,
-		Resource:     id,
-	}
-}
-
 func queryParams(size int, after string) *query.Params {
 	if size == 0 || size > defaultLimit {
 		size = defaultLimit
@@ -53,17 +45,6 @@ func queryParams(size int, after string) *query.Params {
 	}
 
 	return query.NewQueryParams(query.WithLimit(int64(size)), query.WithAfter(after))
-}
-
-func queryParamsExpand(size int, after string, expand string) *query.Params {
-	if size == 0 || size > defaultLimit {
-		size = defaultLimit
-	}
-	if after == "" {
-		return query.NewQueryParams(query.WithLimit(int64(size)), query.WithExpand(expand))
-	}
-
-	return query.NewQueryParams(query.WithLimit(int64(size)), query.WithAfter(after), query.WithExpand(expand))
 }
 
 func responseToContext(token *pagination.Token, resp *okta.Response) (*responseContext, error) {
@@ -109,30 +90,4 @@ func handleOktaResponseError(resp *okta.Response, err error) error {
 		return status.Error(codes.Unavailable, "server error")
 	}
 	return err
-}
-
-// https://developer.okta.com/docs/reference/error-codes/?q=not%20found
-var oktaNotFoundErrors = map[string]struct{}{
-	"E0000007": {},
-	"E0000008": {},
-}
-
-func convertNotFoundError(err error, message string) error {
-	if err == nil {
-		return nil
-	}
-
-	var oktaApiError *okta.Error
-	if !errors.As(err, &oktaApiError) {
-		return err
-	}
-
-	_, ok := oktaNotFoundErrors[oktaApiError.ErrorCode]
-	if !ok {
-		return err
-	}
-
-	grpcErr := status.Error(codes.NotFound, message)
-	allErrs := append([]error{grpcErr}, err)
-	return errors.Join(allErrs...)
 }
