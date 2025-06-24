@@ -100,5 +100,6 @@
       "boolField": {}
     }
   ],
-  "displayName": "Okta CIAM"
+  "displayName": "Okta CIAM",
+  "iconUrl": "/static/app-icons/okta.svg"
 }
