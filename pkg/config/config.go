@@ -15,6 +15,7 @@ var (
 		"api-token",
 		field.WithDisplayName("API token"),
 		field.WithDescription("The API token for the service account"),
+		field.WithRequired(true),
 		field.WithIsSecret(true),
 	)
 	ciamEmailDomains = field.StringSliceField(
