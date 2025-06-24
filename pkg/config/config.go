@@ -42,5 +42,8 @@ var Config = field.NewConfiguration([]field.SchemaField{
 	cacheTTL,
 	skipSecondaryEmails,
 },
+	field.WithConstraints(relationships...),
 	field.WithConnectorDisplayName("Okta CIAM"),
-	field.WithConstraints(relationships...))
+	// field.WithHelpUrl("/docs/baton/okta-v2"),
+	field.WithIconUrl("/static/app-icons/okta.svg"),
+)
