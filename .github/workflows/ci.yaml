@@ -46,11 +46,11 @@ jobs:
       BATON_DOMAIN: ${{ secrets.BATON_DOMAIN }}
       BATON_SYNC_CUSTOM_ROLES: true
       # The following parameters are passed to grant/revoke commands
-      CONNECTOR_GRANT: 'app:0oasl6wittARgAxjE697:access:user:00usl7nnmzxvsCYZM697'
+      CONNECTOR_GRANT: 'role:HELP_DESK_ADMIN:assigned:user:00usmetiqnIVpgwmV697'
       # Okta Workflows App Access
-      CONNECTOR_ENTITLEMENT: 'app:0oasl6wittARgAxjE697:access'
+      CONNECTOR_ENTITLEMENT: 'role:HELP_DESK_ADMIN:assigned'
       CONNECTOR_PRINCIPAL_TYPE: 'user'
-      CONNECTOR_PRINCIPAL: '00usl7nnmzxvsCYZM697'
+      CONNECTOR_PRINCIPAL: '00usmetiqnIVpgwmV697'
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
@@ -82,15 +82,3 @@ jobs:
       - name: Check grant was re-granted
         run: |
           ./baton-okta-ciam && baton grants --entitlement ${{ env.CONNECTOR_ENTITLEMENT }} --output-format=json | jq -e ".grants | any(.principal.id.resource ==\"${{ env.CONNECTOR_PRINCIPAL }}\")"
-      - name: Grant custom roles for users
-        env:
-            BATON_ENTITLEMENT: 'resourceset-binding:iamkg0dn9dH05taAc5d7:cr0kg059ztsV0pNMh5d7:member'
-            BATON_PRINCIPAL_TYPE: 'user'
-            BATON_PRINCIPAL: '00usl7nnmzxvsCYZM697'
-        run: | 
-          ./baton-okta-ciam && ./baton-okta-ciam --grant-entitlement ${{ env.BATON_ENTITLEMENT }} --grant-principal ${{ env.BATON_PRINCIPAL }} --grant-principal-type ${{ env.BATON_PRINCIPAL_TYPE }}
-      - name: Revoke custom role grants
-        env:
-          BATON_GRANT: 'resourceset-binding:iamkg0dn9dH05taAc5d7:cr0kg059ztsV0pNMh5d7:member:user:00uacdfcbiu3Igbmz5d7'
-        run: |
-           ./baton-okta-ciam && ./baton-okta-ciam --revoke-grant ${{ env.BATON_GRANT }}
