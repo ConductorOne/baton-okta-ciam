@@ -41,9 +41,6 @@ func (connector *Okta) ListEvents(
 	l := ctxzap.Extract(ctx)
 	// MJP this will eventually come from config/request?
 	activeFilters := []EventFilter{
-		UsageFilter,
-		GroupChangeFilter,
-		RoleMembershipFilter,
 		UserLifecycleFilter,
 	}
 
