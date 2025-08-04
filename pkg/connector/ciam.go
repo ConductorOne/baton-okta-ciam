@@ -205,6 +205,7 @@ func (g *ciamResourceBuilder) Grant(ctx context.Context, principal *v2.Resource,
 					zap.String("ErrorCode", errOkta.ErrorCode),
 					zap.String("ErrorSummary", errOkta.ErrorSummary),
 				)
+				return annotations.New(&v2.GrantAlreadyExists{}), nil
 			}
 
 			return nil, fmt.Errorf("okta-connector: %v", errOkta)
@@ -239,6 +240,7 @@ func (g *ciamResourceBuilder) Grant(ctx context.Context, principal *v2.Resource,
 					zap.String("ErrorCode", errOkta.ErrorCode),
 					zap.String("ErrorSummary", errOkta.ErrorSummary),
 				)
+				return annotations.New(&v2.GrantAlreadyExists{}), nil
 			}
 
 			return nil, fmt.Errorf("okta-connector: %v", errOkta)
@@ -292,7 +294,7 @@ func (g *ciamResourceBuilder) Revoke(ctx context.Context, grant *v2.Grant) (anno
 				zap.String("principal_type", principal.Id.ResourceType),
 				zap.String("role_type", entitlement.Resource.Id.Resource),
 			)
-			return nil, fmt.Errorf("okta-connector: user does not have role membership")
+			return annotations.New(&v2.GrantAlreadyRevoked{}), nil
 		}
 
 		roleId = roles[rolePos].Id
@@ -323,7 +325,7 @@ func (g *ciamResourceBuilder) Revoke(ctx context.Context, grant *v2.Grant) (anno
 				zap.String("principal_type", principal.Id.ResourceType),
 				zap.String("role_type", entitlement.Resource.Id.Resource),
 			)
-			return nil, fmt.Errorf("okta-connector: group does not have role membership")
+			return annotations.New(&v2.GrantAlreadyRevoked{}), nil
 		}
 
 		roleId = roles[rolePos].Id
