@@ -121,7 +121,7 @@ func listAdministratorRoleFlags(
 	resp, err := rq.Do(ctx, req, &adminFlags)
 	if err != nil {
 		// If we don't have access to the role endpoint, we should just return nil
-		if resp.StatusCode == http.StatusForbidden {
+		if resp != nil && resp.StatusCode == http.StatusForbidden {
 			return nil, nil, errMissingRolePermissions
 		}
 
