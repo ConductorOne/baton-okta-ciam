@@ -19,7 +19,8 @@
         "CAPABILITY_SYNC",
         "CAPABILITY_TARGETED_SYNC",
         "CAPABILITY_PROVISION"
-      ]
+      ],
+      "permissions":  {}
     },
     {
       "resourceType":  {
@@ -42,7 +43,8 @@
         "CAPABILITY_SYNC",
         "CAPABILITY_TARGETED_SYNC",
         "CAPABILITY_ACCOUNT_PROVISIONING"
-      ]
+      ],
+      "permissions":  {}
     }
   ],
   "connectorCapabilities":  [
@@ -50,7 +52,8 @@
     "CAPABILITY_SYNC",
     "CAPABILITY_ACCOUNT_PROVISIONING",
     "CAPABILITY_TARGETED_SYNC",
-    "CAPABILITY_EVENT_FEED_V2"
+    "CAPABILITY_EVENT_FEED_V2",
+    "CAPABILITY_SERVICE_MODE_TARGETED_SYNC"
   ],
   "credentialDetails":  {
     "capabilityAccountProvisioning":  {
