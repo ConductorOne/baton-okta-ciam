@@ -65,6 +65,7 @@ func getConnector(ctx context.Context, oc *config.OktaCiam) (types.ConnectorServ
 		Domain:              oc.Domain,
 		ApiToken:            oc.ApiToken,
 		CiamEmailDomains:    oc.CiamEmailDomains,
+		BaseURL:             oc.BaseUrl,
 		Cache:               oc.Cache,
 		CacheTTI:            cacheTTI,
 		CacheTTL:            cacheTTL,

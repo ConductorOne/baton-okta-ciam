@@ -7,13 +7,14 @@ type OktaCiam struct {
 	Domain string `mapstructure:"domain"`
 	ApiToken string `mapstructure:"api-token"`
 	CiamEmailDomains []string `mapstructure:"ciam-email-domains"`
+	BaseUrl string `mapstructure:"base-url"`
 	Cache bool `mapstructure:"cache"`
 	CacheTti int `mapstructure:"cache-tti"`
 	CacheTtl int `mapstructure:"cache-ttl"`
 	SkipSecondaryEmails bool `mapstructure:"skip-secondary-emails"`
 }
 
-func (c* OktaCiam) findFieldByTag(tagValue string) (any, bool) {
+func (c *OktaCiam) findFieldByTag(tagValue string) (any, bool) {
 	v := reflect.ValueOf(c).Elem() // Dereference pointer to struct
 	t := v.Type()
 
@@ -45,11 +46,13 @@ func (c *OktaCiam) GetString(fieldName string) string {
 	if !ok {
 		return ""
 	}
-	t, ok := v.(string)
-	if !ok {
-		panic("wrong type")
+	if t, ok := v.(string); ok {
+		return t
 	}
-	return t
+	if t, ok := v.([]byte); ok {
+		return string(t)
+	}
+	panic("wrong type")
 }
 
 func (c *OktaCiam) GetInt(fieldName string) int {
