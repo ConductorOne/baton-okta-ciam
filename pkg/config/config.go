@@ -27,6 +27,7 @@ var (
 		"base-url",
 		field.WithDescription("Override the Okta CIAM API URL (for testing)"),
 		field.WithHidden(true),
+		field.WithExportTarget(field.ExportTargetCLIOnly),
 	)
 
 	cache               = field.BoolField("cache", field.WithDescription("Enable response cache"), field.WithDefaultValue(true))
