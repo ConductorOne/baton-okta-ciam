@@ -23,6 +23,12 @@ var (
 		field.WithDisplayName("Okta email domains (optional)"),
 		field.WithDescription("The email domains to use for CIAM mode. Any users that don't have an email address with one of the provided domains will be ignored, unless explicitly granted a role"),
 	)
+	baseURL = field.StringField(
+		"base-url",
+		field.WithDescription("Override the Okta CIAM API URL (for testing)"),
+		field.WithHidden(true),
+		field.WithExportTarget(field.ExportTargetCLIOnly),
+	)
 
 	cache               = field.BoolField("cache", field.WithDescription("Enable response cache"), field.WithDefaultValue(true))
 	cacheTTI            = field.IntField("cache-tti", field.WithDescription("Response cache cleanup interval in seconds"), field.WithDefaultValue(60))
@@ -37,6 +43,7 @@ var Config = field.NewConfiguration([]field.SchemaField{
 	domain,
 	apiToken,
 	ciamEmailDomains,
+	baseURL,
 	cache,
 	cacheTTI,
 	cacheTTL,

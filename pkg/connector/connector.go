@@ -29,6 +29,7 @@ type Config struct {
 	Domain           string
 	ApiToken         string
 	CiamEmailDomains []string
+	BaseURL          string
 
 	Cache               bool
 	CacheTTI            int32
@@ -198,9 +199,15 @@ func New(ctx context.Context, cfg *Config) (*Okta, error) {
 		return nil, err
 	}
 
+	// Use base URL if provided, otherwise construct from domain
+	orgURL := cfg.BaseURL
+	if orgURL == "" {
+		orgURL = fmt.Sprintf("https://%s", cfg.Domain)
+	}
+
 	if cfg.ApiToken != "" && cfg.Domain != "" {
 		_, oktaClient, err = okta.NewClient(ctx,
-			okta.WithOrgUrl(fmt.Sprintf("https://%s", cfg.Domain)),
+			okta.WithOrgUrl(orgURL),
 			okta.WithToken(cfg.ApiToken),
 			okta.WithHttpClientPtr(client),
 			okta.WithCache(cfg.Cache),
