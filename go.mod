@@ -2,6 +2,8 @@ module github.com/conductorone/baton-okta-ciam
 
 go 1.25.2
 
+toolchain go1.25.13
+
 require (
 	github.com/conductorone/baton-sdk v0.30.0
 	github.com/deckarep/golang-set/v2 v2.9.0
@@ -101,7 +103,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.3.3 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
-	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.5 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
